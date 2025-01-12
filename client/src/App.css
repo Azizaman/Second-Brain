@@ -1,0 +1,22 @@
+/* index.css or App.css */
+
+/* Default light mode styles */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+}
+
+/* Dark mode styles */
+.dark {
+  --bg-color: #000000;
+  --text-color: #ffffff;
+}
+
+/* Apply styles to the body */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
+}
+
+
