@@ -9,9 +9,7 @@ const __dirname = path.dirname(__filename);
 if (!admin.apps.length) {
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccountKey), // Cast to ServiceAccount
-        databaseURL: "https://<your-database-name>.firebaseio.com", // Replace with your database URL
     });
 }
-const db = admin.firestore(); // Firestore reference
-const auth = admin.auth(); // Auth reference (if needed)
-export { db, auth };
+const auth = admin.auth(); // Firebase Auth reference
+export { auth };

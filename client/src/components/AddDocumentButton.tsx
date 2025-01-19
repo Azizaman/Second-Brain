@@ -6,6 +6,8 @@ const AddDocumentButton = () => {
   const [title, setTitle] = useState('');
   const [file, setFile] = useState<File | null>(null); // To store the uploaded file
   const [loading, setLoading] = useState(false); // State to indicate request progress
+    const [error, setError] = useState<string | null>(null);
+  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -21,9 +23,15 @@ const AddDocumentButton = () => {
       formData.append('file', file);
 
       try {
+        const token=await localStorage.getItem('authToken');
+        if (!token || token.length===0) {
+          setError("No auth token found.");
+          return;
+        }
         const response = await axios.post('http://localhost:5000/upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
+            Authorization:`Bearer ${token}`
           },
         });
         console.log('Response:', response.data);
@@ -33,6 +41,7 @@ const AddDocumentButton = () => {
         setFile(null);
         setAdd(false);
         alert('Document added successfully!');
+        window.location.reload();
       } catch (error) {
         console.error('Error uploading document:', error);
         alert('Failed to upload document. Please try again.');
@@ -48,7 +57,7 @@ const AddDocumentButton = () => {
     <div className="p-4">
       <button
         onClick={() => setAdd(!add)} // Toggle form visibility
-        className="bg-blue-500 text-white py-2 px-4 rounded"
+        className="bg-blue-500 text-white py-2 px-4 rounded mt-2"
       >
         {add ? 'Close Form' : 'Add Document'}
       </button>

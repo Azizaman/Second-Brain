@@ -5,6 +5,7 @@ export default function LoginButton(){
     const { loginWithRedirect, logout, user, isAuthenticated } = useAuth0();
 
     console.log("current user ",user);
+    
 
     return isAuthenticated? (
         <Button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
@@ -16,3 +17,4 @@ export default function LoginButton(){
         }}>Log in</Button>
     )
 }
+

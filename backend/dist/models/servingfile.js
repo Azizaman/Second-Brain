@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // models/servingfile.ts
 import { MongoClient, GridFSBucket, ObjectId } from 'mongodb';
 import fs from 'fs';
-const uri = "mongodb+srv://azizamanaaa97:easypassword@cluster0.tyjfznw.mongodb.net/second-brain";
+const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 export default function downloadFile(fileId, destinationPath) {
     return __awaiter(this, void 0, void 0, function* () {

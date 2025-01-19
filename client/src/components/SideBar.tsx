@@ -1,15 +1,24 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 // Import icons from the assets folder
-import documentsIcon from '@/assets/document.png';
-import notesIcon from '@/assets/sticky-note.png';
-import searchIcon from '@/assets/search.png';
+
+import docs from '@/assets/docs.png'
+import { ModeToggle } from "./mode-toggle";
+import LoginButton from "./LoginButton";
+import notes from '@/assets/notes.png'
+import searchicon from '@/assets/search-icon.png';
 
 export default function Leftbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [darkTheme, setDarkTheme] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
+  const toggleTheme = () => {
+    setDarkTheme(!darkTheme);
+    document.body.className = darkTheme ? "light" : "dark"; // Apply theme
+  };
 
   return (
     <>
@@ -23,11 +32,23 @@ export default function Leftbar() {
 
       {/* Sidebar */}
       <div
-        className={` fixed inset-0 top-0 left-0 py-10 h-screen w-52 bg-gray-400 dark:bg-sidebar text-black dark:text-sidebar-foreground transform transition-transform duration-300 ease-in-out z-40 ${
+        className={`fixed inset-0 top-0 left-0 py-10 h-screen w-52 bg-gray-400 dark:bg-sidebar text-black dark:text-sidebar-foreground transform transition-transform duration-300 ease-in-out z-40 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 md:static md:block`}
+        } md:translate-x-0 md:static md:block overflow-y-auto`}
       >
-        <div className="fixed flex flex-col space-y-4 px-4 w-full text-left text-white dark:text-white">
+        {/* Sidebar Header */}
+        <div className="text-white font-bold text-2xl items-center ml-6 py-4 mb-4 cursor-pointer hover:text-gray-500  ">
+          <a
+            onClick={() => {
+              navigate('/');
+            }}
+          >
+            Second Brain
+          </a>
+        </div>
+
+        {/* Sidebar Links */}
+        <div className="flex flex-col space-y-4 px-4 w-full text-left text-white dark:text-white">
           <NavLink
             to="/documents"
             className={({ isActive }) =>
@@ -39,9 +60,10 @@ export default function Leftbar() {
             }
           >
             {/* Document Icon */}
-            <img src={documentsIcon} alt="Documents" className="w-5 h-5 bg-gray-400" />
+            <img src={docs} alt="Documents" className="w-6 h-6 " />
             <span>Documents</span>
           </NavLink>
+
           <NavLink
             to="/notes"
             className={({ isActive }) =>
@@ -53,9 +75,10 @@ export default function Leftbar() {
             }
           >
             {/* Notes Icon */}
-            <img src={notesIcon} alt="Notes" className="w-5 h-5 bg-gray-400" />
+            <img src={notes} alt="Notes" className="w-5 h-5 " />
             <span>Notes</span>
           </NavLink>
+
           <NavLink
             to="/search"
             className={({ isActive }) =>
@@ -67,9 +90,28 @@ export default function Leftbar() {
             }
           >
             {/* Search Icon */}
-            <img src={searchIcon} alt="Search" className="w-5 h-5 bg-gray-400" />
+            <img src={searchicon} alt="Search" className="w-5 h-5 " />
             <span>Search</span>
           </NavLink>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="mt-40 px-4 pb-4 py-6 ">
+          <div className="space-y-5 items-center ml-12">
+            
+          {/* Theme Toggle Button */}
+          <ModeToggle/>
+
+          </div>
+          <div className="space-y-9 mt-6 items-center ml-10 ">
+            {/* Login Button */}
+          <LoginButton/>
+            
+            
+          </div>
+          
+
+          
         </div>
       </div>
 
@@ -80,6 +122,8 @@ export default function Leftbar() {
           onClick={toggleSidebar}
         ></div>
       )}
+
+      
     </>
   );
 }

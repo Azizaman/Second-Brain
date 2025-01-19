@@ -2,9 +2,12 @@ import './App.css';
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
 import DocumentViewer from './components/Documents';
+import Login from './components/GoogleLogin';
 
 import Documents from './components/Documents';
-import Showingnotes from './components/showing-notes';
+import { Notes } from './components/notes';
+
+
 
 interface Document {
   _id: string;
@@ -41,6 +44,10 @@ function App() {
       });
   }, []);
 
+
+  
+      
+
   return (
     <div className="flex flex-col h-screen">
       <BrowserRouter>
@@ -58,7 +65,9 @@ function App() {
                 
                 <Route path='/' element={<Documents/>}/>
                 <Route path='/documents' element={<Documents/>}/>
-                <Route path='/notes' element={<Showingnotes/>}></Route>
+                <Route path='/notes' element={<Notes/>}></Route>
+                
+                <Route path='/login' element={<Login/>}/>
                 
               
            
