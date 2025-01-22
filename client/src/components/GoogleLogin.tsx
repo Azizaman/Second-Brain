@@ -22,7 +22,7 @@ export default function Login() {
 
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <div>
+      <div className="">
         <GoogleLogin
           onSuccess={handleLoginSuccess}
           onError={handleLoginFailure}

@@ -12,6 +12,7 @@ import passport from 'passport'
 import session from 'express-session';
 import authrouter from './routes/auth.js'
 import { PrismaClient } from "@prisma/client";
+import diaryrouter from './routes/diary.js'
 
 
 const prisma=new PrismaClient();
@@ -416,6 +417,7 @@ app.post("/login", async (req, res) => {
 app.use('/auth',authrouter)
 // Upload endpoint
 app.use('/notes',notesrouter)
+app.use('/diary',diaryrouter)
 
 // Updated /upload endpoint
 app.post("/upload", authenticateToken, upload.single("file"), async (req, res) => {

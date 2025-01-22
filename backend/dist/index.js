@@ -21,6 +21,7 @@ import passport from 'passport';
 import session from 'express-session';
 import authrouter from './routes/auth.js';
 import { PrismaClient } from "@prisma/client";
+import diaryrouter from './routes/diary.js';
 const prisma = new PrismaClient();
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2';
 dotenv.config();
@@ -283,6 +284,7 @@ app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 app.use('/auth', authrouter);
 // Upload endpoint
 app.use('/notes', notesrouter);
+app.use('/diary', diaryrouter);
 // Updated /upload endpoint
 app.post("/upload", authenticateToken, upload.single("file"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

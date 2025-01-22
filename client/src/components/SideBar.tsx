@@ -8,6 +8,7 @@ import { ModeToggle } from "./mode-toggle";
 import LoginButton from "./LoginButton";
 import notes from '@/assets/notes.png'
 import searchicon from '@/assets/search-icon.png';
+import Login from "./GoogleLogin";
 
 export default function Leftbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -105,7 +106,7 @@ export default function Leftbar() {
           </div>
           <div className="space-y-9 mt-6 items-center ml-10 ">
             {/* Login Button */}
-          <LoginButton/>
+          <Login/>
             
             
           </div>

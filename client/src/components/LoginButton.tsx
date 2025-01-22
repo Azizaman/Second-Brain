@@ -1,5 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "./ui/button";
+import Login from "./GoogleLogin";
 
 export default function LoginButton(){
     const { loginWithRedirect, logout, user, isAuthenticated } = useAuth0();
@@ -13,7 +14,7 @@ export default function LoginButton(){
       </Button>
     ):(
         <Button  className={'bg-blue-600'} onClick={()=>{
-            loginWithRedirect()
+            Login();
         }}>Log in</Button>
     )
 }

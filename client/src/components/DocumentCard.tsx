@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
 
 interface Document {
   _id: string;
   fileKey: string;
   title: string;
-  parsedResponse?:string
-    
+  parsedResponse?: string;
 }
 
 const DocumentCard: React.FC = () => {
@@ -17,7 +15,6 @@ const DocumentCard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { getAccessTokenSilently } = useAuth0(); // Auth0 hook to get the token
 
   // Fetch documents from the backend
   const fetchDocuments = async () => {
@@ -26,8 +23,8 @@ const DocumentCard: React.FC = () => {
       setError(null);
 
       // Get the token from Auth0
-      const token = await localStorage.getItem('authToken');
-      console.log('token received:', token);
+      const token = await localStorage.getItem("authToken");
+      console.log("token received:", token);
 
       if (!token) {
         setError("No auth token found.");
@@ -39,7 +36,7 @@ const DocumentCard: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('get request token ',token)
+      console.log("get request token ", token);
 
       setDocuments(response.data);
     } catch (err) {
@@ -57,7 +54,7 @@ const DocumentCard: React.FC = () => {
       setError(null);
 
       // Get the token from Auth0
-      const token = await localStorage.getItem('authToken');
+      const token = await localStorage.getItem("authToken");
 
       if (!token) {
         setError("No auth token found.");
@@ -106,20 +103,16 @@ const DocumentCard: React.FC = () => {
     }
   }, [selectedDocument]);
 
-  
-
-
-
   return (
     <div>
       {loading && (
-        <div className="flex justify-center items-center h-screen">
+        <div className="flex justify-center items-center h-screen ml80">
           <div className="spinner-border animate-spin w-12 h-12 border-4 border-blue-500 rounded-full"></div>
           <p className="ml-4 text-gray-800 dark:text-white">Loading...</p>
         </div>
       )}
 
-      <div className="flex flex-col h-screen p-4 bg-gray-100 dark:bg-black">
+      <div className="flex flex-col min-h-screen p-4 bg-gray-100 dark:bg-black">
         <h1 className="text-2xl font-bold text-center mb-4 text-gray-800 dark:text-white">
           Document Viewer
         </h1>
@@ -130,13 +123,13 @@ const DocumentCard: React.FC = () => {
 
         {!loading && !error && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mr-10">
               {documents.map((document) => (
                 <div
                   key={document._id}
                   className="border rounded-lg p-4 shadow-md bg-gray-200 dark:bg-sidebar dark:text-white"
                 >
-                  <h2 className="text-lg font-semibold">
+                  <h2 className="text-lg font-semibold truncate">
                     {document.title || document.fileKey}
                   </h2>
                   <p className="text-sm mt-2 text-gray-600 dark:text-gray-300">
@@ -144,7 +137,7 @@ const DocumentCard: React.FC = () => {
                   </p>
                   <button
                     onClick={() => setSelectedDocument(document._id)}
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                    className="mt-4 px-4 py-2 w-full bg-blue-500 text-white rounded hover:bg-blue-700"
                   >
                     View Document
                   </button>
@@ -152,8 +145,8 @@ const DocumentCard: React.FC = () => {
               ))}
             </div>
 
-            {/* PDF Viewer */}
-            {selectedDocument && pdfUrl && (
+           {/* PDF Viewer */}
+           {selectedDocument && pdfUrl && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                 <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-2/3">
                   <iframe
@@ -180,4 +173,3 @@ const DocumentCard: React.FC = () => {
   );
 };
 export default DocumentCard;
-
