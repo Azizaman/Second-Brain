@@ -49,9 +49,9 @@ export function AddnotesButton() {
     <div className="p-4">
       <button
         onClick={() => setAdd(!add)} // Toggle form visibility
-        className="bg-blue-500 text-white py-2 px-4 rounded"
+        className="bg-blue-500 text-white py-2 px-2 mt-6 rounded"
       >
-        {add ? 'Close Form' : 'Add Document'}
+        {add ? 'Close Form' : 'Add Notes'}
       </button>
 
       {add && (

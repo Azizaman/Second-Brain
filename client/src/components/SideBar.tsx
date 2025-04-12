@@ -9,6 +9,8 @@ import LoginButton from "./LoginButton";
 import notes from '@/assets/notes.png'
 import searchicon from '@/assets/search-icon.png';
 import Login from "./GoogleLogin";
+import diary from '../assets/diary.png'
+import calender from '../assets/schedule.png'
 
 export default function Leftbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +37,7 @@ export default function Leftbar() {
       <div
         className={`fixed inset-0 top-0 left-0 py-10 h-screen w-52 bg-gray-400 dark:bg-sidebar text-black dark:text-sidebar-foreground transform transition-transform duration-300 ease-in-out z-40 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 md:static md:block overflow-y-auto`}
+        } md:translate-x-0 md:static md:block overflow-y-hidden`}
       >
         {/* Sidebar Header */}
         <div className="text-white font-bold text-2xl items-center ml-6 py-4 mb-4 cursor-pointer hover:text-gray-500  ">
@@ -81,7 +83,7 @@ export default function Leftbar() {
           </NavLink>
 
           <NavLink
-            to="/search"
+            to="/diary"
             className={({ isActive }) =>
               `flex items-center p-4 rounded transition-all duration-200 space-x-2 ${
                 isActive
@@ -90,14 +92,35 @@ export default function Leftbar() {
               }`
             }
           >
-            {/* Search Icon */}
-            <img src={searchicon} alt="Search" className="w-5 h-5 " />
-            <span>Search</span>
+            {/* Notes Icon */}
+            <img src={diary} alt="Notes" className="w-5 h-5 " />
+            <span>Diary</span>
           </NavLink>
+
+
+          <NavLink
+            to="/calender"
+            className={({ isActive }) =>
+              `flex items-center p-4 rounded transition-all duration-200 space-x-2 ${
+                isActive
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  : "hover:bg-gray-500"
+              }`
+            }
+          >
+            {/* Notes Icon */}
+            <img src={calender} alt="Notes" className="w-5 h-5 " />
+            <span>Calender</span>
+          </NavLink>
+
+
+
+
+          
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-40 px-4 pb-4 py-6 ">
+        <div className="mt-20 px-4 pb-4 py-6 ">
           <div className="space-y-5 items-center ml-12">
             
           {/* Theme Toggle Button */}

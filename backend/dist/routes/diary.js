@@ -10,9 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { Router } from 'express';
 const router = Router();
 import mongoose from "mongoose";
+import jwt from 'jsonwebtoken';
 const DiaryEntrySchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
+    googleId: {
+        type: String,
         ref: "User",
         required: true,
     },
@@ -23,10 +24,6 @@ const DiaryEntrySchema = new mongoose.Schema({
     content: {
         type: String,
         required: true,
-    },
-    tags: {
-        type: [String],
-        default: [],
     },
     mood: {
         type: String,
@@ -43,12 +40,22 @@ const DiaryEntrySchema = new mongoose.Schema({
 const DiaryEntry = mongoose.model("DiaryEntry", DiaryEntrySchema);
 router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId, title, content, tags, mood } = req.body;
+        const { title, content, mood } = req.body;
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: "Access denied, no token provided" });
+        }
+        const token = authHeader.split(" ")[1]; // Extract the token part
+        if (!token) {
+            return res.status(401).json({ message: "Access denied, no token provided" });
+        }
+        // Verify the token and assert the correct type for decoded payload
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Type assertion
+        const { googleId } = decoded;
         const newEntry = new DiaryEntry({
-            userId,
+            googleId,
             title,
             content,
-            tags,
             mood,
         });
         yield newEntry.save();
@@ -57,13 +64,33 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        res.status(500).json({ error: "Failed to create diary entry." });
+        res.status(500).json({ error: `Failed to create diary entry.${error}` });
     }
 }));
-router.get("/:userId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId } = req.params;
-        const entries = yield DiaryEntry.find({ userId }).sort({ createdAt: -1 });
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: "Access denied, no token provided" });
+        }
+        const token = authHeader.split(" ")[1]; // Extract the token part
+        if (!token) {
+            return res.status(401).json({ message: "Access denied, no token provided" });
+        }
+        // Verify the token and assert the correct type for decoded payload
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Type assertion
+        const { googleId } = decoded;
+        const entries = yield DiaryEntry.find({ googleId }).sort({ createdAt: -1 });
+        res.status(200).json(entries);
+    }
+    catch (error) {
+        res.json({ message: 'error fetching the diary entries', error });
+    }
+}));
+router.get("/:_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { _id } = req.params;
+        const entries = yield DiaryEntry.find({ _id }).sort({ createdAt: -1 });
         res.status(200).json(entries);
     }
     catch (error) {

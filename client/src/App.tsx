@@ -1,49 +1,24 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
 import DocumentViewer from './components/Documents';
 import Login from './components/GoogleLogin';
 
 import Documents from './components/Documents';
 import { Notes } from './components/notes';
+import Diary from './components/Diary';
+import DisplayDiary from './components/DisplayDiary';
+import AddDiary from './components/AddDiary';
+import DiaryDetails from './components/DiaryDetails';
+import { Calendar } from 'lucide-react';
+import MyCalendar from './components/MyCalendar';
+import CalenderSidebar from './components/CalenderSidebar';
 
 
 
-interface Document {
-  _id: string;
-  fileKey: string;
-  parsedResponse?: {
-    summary?: string;
-  };
-}
 
 
 function App() {
-  const [documents, setDocuments] = useState<Document[]>([]);
-
-  // Fetching document data from the server
-  useEffect(() => {
-    fetch('http://localhost:5000/documents')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Fetched Documents:', data);
-
-        // Filter unique documents by `_id`
-        const uniqueDocs = Array.from(new Map(data.map((doc:Document) => [doc._id, doc])).values());
-        console.log('Unique Documents:', uniqueDocs);
-
-        setDocuments(uniqueDocs);
-      })
-      .catch((error) => {
-        console.error('Error fetching documents:', error);
-      });
-  }, []);
-
+  
 
   
       
@@ -68,6 +43,10 @@ function App() {
                 <Route path='/notes' element={<Notes/>}></Route>
                 
                 <Route path='/login' element={<Login/>}/>
+                <Route path='/diary' element={<Diary/>}/>
+                <Route path='/add-diary' element={<AddDiary/>}/>
+                <Route path="/diary/:diaryId" element={<DiaryDetails/>} />
+                <Route path="/calender" element={<CalenderSidebar/>} />
                 
               
            

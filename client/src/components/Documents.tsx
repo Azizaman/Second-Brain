@@ -5,17 +5,18 @@ import Leftbar from "./SideBar";
 
 const Documents = () => {
   return (
-    <div className="flex">
-      <div>
-        <Leftbar/>
+    <div className="w-full min-h-screen flex bg-gray-50 dark:bg-gray-900 overflow-hidden">
+      {/* Sidebar */}
+      <div className="w-auto">
+        <Leftbar />
       </div>
-      <div className="ml-10 my-10">
+
+      {/* Main Content */}
+      <div className="flex-1 px-4 sm:px-6 md:px-12 lg:px-24 py-8 overflow-y-auto">
         <div className="space-y-10 mb-10">
-            <AddDocumentButton/>
+          <AddDocumentButton />
         </div>
-        <div>
-          <DocumentCard/>
-        </div>
+        <DocumentCard />
       </div>
     </div>
   );

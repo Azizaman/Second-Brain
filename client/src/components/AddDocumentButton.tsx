@@ -42,8 +42,10 @@ const AddDocumentButton = () => {
         setAdd(false);
         alert('Document added successfully!');
         window.location.reload();
+        console.log(error)
       } catch (error) {
         console.error('Error uploading document:', error);
+        
         alert('Failed to upload document. Please try again.');
       } finally {
         setLoading(false);
@@ -57,7 +59,7 @@ const AddDocumentButton = () => {
     <div className="p-4">
       <button
         onClick={() => setAdd(!add)} // Toggle form visibility
-        className="bg-blue-500 text-white py-2 px-4 rounded mt-2"
+        className="bg-blue-500 text-white py-2 px-2 rounded mt-8"
       >
         {add ? 'Close Form' : 'Add Document'}
       </button>

@@ -2,11 +2,15 @@ import express from 'express';
 import { Router } from 'express';
 const router=Router();
 import mongoose from "mongoose";
+import jwt from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
+
+
 
 const DiaryEntrySchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
+    googleId: {
+      type: String,
       ref: "User",
       required: true,
     },
@@ -18,10 +22,7 @@ const DiaryEntrySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    tags: {
-      type: [String],
-      default: [],
-    },
+    
     mood: {
       type: String,
       enum: ["happy", "sad", "neutral", "excited", "angry"],
@@ -43,13 +44,28 @@ const DiaryEntry = mongoose.model("DiaryEntry", DiaryEntrySchema);
 
 router.post("/", async (req, res) => {
     try {
-      const { userId, title, content, tags, mood } = req.body;
+      const {  title, content, mood } = req.body;
+      const authHeader = req.headers.authorization;
+          if (!authHeader) {
+            return res.status(401).json({ message: "Access denied, no token provided" });
+          }
+      
+          const token = authHeader.split(" ")[1]; // Extract the token part
+      
+          if (!token) {
+            return res.status(401).json({ message: "Access denied, no token provided" });
+          }
+      
+          // Verify the token and assert the correct type for decoded payload
+          const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload; // Type assertion
+          const {googleId} = decoded; 
+      
   
       const newEntry = new DiaryEntry({
-        userId,
+        googleId,
         title,
         content,
-        tags,
+        
         mood,
       });
   
@@ -58,18 +74,45 @@ router.post("/", async (req, res) => {
         message:'Diary created successfully',newEntry
       });
     } catch (error) {
-      res.status(500).json({ error: "Failed to create diary entry." });
+      res.status(500).json({ error: `Failed to create diary entry.${error}`});
     }
   });
+
+
+  router.get('/',async(req,res)=>{
+    try{
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: "Access denied, no token provided" });
+      }
+  
+      const token = authHeader.split(" ")[1]; // Extract the token part
+  
+      if (!token) {
+        return res.status(401).json({ message: "Access denied, no token provided" });
+      }
+  
+      // Verify the token and assert the correct type for decoded payload
+      const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload; // Type assertion
+      const {googleId} = decoded; 
+      
+      const entries=await DiaryEntry.find({googleId}).sort({createdAt:-1});
+      res.status(200).json(entries);
+    }
+    catch(error){
+      res.json({message:'error fetching the diary entries',error});
+    }
+  })
 
   
 
 
 
-  router.get("/:userId", async (req, res) => {
+  router.get("/:_id", async (req, res) => {
     try {
-      const { userId } = req.params;
-      const entries = await DiaryEntry.find({ userId }).sort({ createdAt: -1 });
+
+      const { _id } = req.params;
+      const entries = await DiaryEntry.find({ _id }).sort({ createdAt: -1 });
   
       res.status(200).json(entries);
     } catch (error) {

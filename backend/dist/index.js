@@ -22,13 +22,14 @@ import session from 'express-session';
 import authrouter from './routes/auth.js';
 import { PrismaClient } from "@prisma/client";
 import diaryrouter from './routes/diary.js';
+import eventsrouter from './routes/calender.js';
 const prisma = new PrismaClient();
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2';
 dotenv.config();
 // Constants
 const PORT = 5000;
 const MONGO_URI = process.env.MONGO_URI;
-const AI_MODEL = "gemini-pro"; // Assuming AI analysis uses this
+const AI_MODEL = "gemini-2.0-flash"; // Assuming AI analysis uses this
 const AI_API_KEY = process.env.AI_API_KEY;
 const AI_MODEL_INSTANCE = new GoogleGenerativeAI(AI_API_KEY).getGenerativeModel({ model: AI_MODEL });
 // Initialize Express
@@ -240,7 +241,7 @@ import jwt from "jsonwebtoken";
 const generateToken = (user) => {
     return jwt.sign({ googleId: user.googleId }, // Payload
     process.env.JWT_SECRET, // Secret key
-    { expiresIn: "1h" } // Token expiration time
+    { expiresIn: "10h" } // Token expiration time
     );
 };
 app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -285,6 +286,7 @@ app.use('/auth', authrouter);
 // Upload endpoint
 app.use('/notes', notesrouter);
 app.use('/diary', diaryrouter);
+app.use('/events', eventsrouter);
 // Updated /upload endpoint
 app.post("/upload", authenticateToken, upload.single("file"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
