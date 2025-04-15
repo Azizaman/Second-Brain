@@ -23,6 +23,7 @@ import authrouter from './routes/auth.js';
 import { PrismaClient } from "@prisma/client";
 import diaryrouter from './routes/diary.js';
 import eventsrouter from './routes/calender.js';
+import mammoth from "mammoth";
 const prisma = new PrismaClient();
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2';
 dotenv.config();
@@ -168,8 +169,17 @@ const extractTextFromPDF = (fileBuffer) => __awaiter(void 0, void 0, void 0, fun
 });
 // Function to extract text using OCR
 const extractTextUsingOCR = (fileBuffer) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Tesseract.recognize(fileBuffer, 'eng', { logger: (m) => console.log(m) });
-    return result.data.text;
+    try {
+        console.log("Starting OCR with buffer size:", fileBuffer.length);
+        const result = yield Tesseract.recognize(fileBuffer, 'eng', {
+            logger: (m) => console.log(m),
+        });
+        return result.data.text;
+    }
+    catch (error) {
+        console.error("OCR Error:", error);
+        throw new Error("Failed to perform OCR on image.");
+    }
 });
 // Helper function to clean up extracted text
 const cleanExtractedText = (text) => {
@@ -194,7 +204,6 @@ const analyzeContractWithAI = (contractText) => __awaiter(void 0, void 0, void 0
         responseText = responseText.replace(/```json|```/g, "").trim();
         // Parse the cleaned response text as JSON
         const parsedResponse = JSON.parse(responseText);
-        console.log('this is the parsedResponse', parsedResponse);
         return parsedResponse;
     }
     catch (error) {
@@ -288,59 +297,63 @@ app.use('/notes', notesrouter);
 app.use('/diary', diaryrouter);
 app.use('/events', eventsrouter);
 // Updated /upload endpoint
+// Updated /upload endpoint
 app.post("/upload", authenticateToken, upload.single("file"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             return res.status(401).json({ message: "Access denied, no token provided" });
         }
-        const token = authHeader.split(" ")[1]; // Extract the token part
+        const token = authHeader.split(" ")[1];
         if (!token) {
             return res.status(401).json({ message: "Access denied, no token provided" });
         }
-        // Verify the token and assert the correct type for decoded payload
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const { googleId } = decoded; // googleId from the token payload
+        const { googleId } = decoded;
         if (!req.file) {
             return res.status(400).json({ error: "No file uploaded" });
         }
         const { title } = req.body;
         const fileBuffer = req.file.buffer;
-        const fileKey = req.file.originalname;
-        // Extract text from the file (PDF or image)
+        const fileKey = req.file.originalname.toLowerCase();
+        // Extract text based on file type
         let extractedText = "";
         if (fileKey.endsWith(".pdf")) {
             extractedText = yield extractTextFromPDF(fileBuffer);
         }
-        else {
+        else if (fileKey.endsWith(".docx")) {
+            // Handle Word documents
+            const result = yield mammoth.extractRawText({ buffer: fileBuffer });
+            extractedText = result.value;
+        }
+        else if (fileKey.match(/\.(png|jpg|jpeg|tiff|bmp)$/)) {
+            // Handle images with OCR
             extractedText = yield extractTextUsingOCR(fileBuffer);
+        }
+        else {
+            return res.status(400).json({ error: "Unsupported file format. Please upload a PDF, DOCX, PNG, or JPEG." });
         }
         // Clean the extracted text
         extractedText = cleanExtractedText(extractedText);
         if (!extractedText) {
-            return res
-                .status(400)
-                .json({ error: "Failed to extract text from the uploaded file." });
+            return res.status(400).json({ error: "Failed to extract text from the uploaded file." });
         }
         // Analyze the extracted text using AI
         const analysis = yield analyzeContractWithAI(extractedText);
         // Store the file and analysis in MongoDB
         const newDocument = new FileModel({
             title,
-            parsedResponse: analysis.summary, // Storing summary or extracted text
-            userId: googleId, // Use googleId to associate with the user
+            parsedResponse: analysis.summary,
+            userId: googleId,
             fileKey,
-            data: fileBuffer, // Save the file buffer
+            data: fileBuffer,
             extractedText,
-            // Store the original file name
         });
-        // Save the document in the database
         yield newDocument.save();
-        // Send the summary in the response
         res.status(200).json({
             message: "File uploaded and analyzed successfully",
-            documentId: newDocument._id, // MongoDB _id of the new document
-            summary: analysis.summary, // Include AI-generated summary
+            documentId: newDocument._id,
+            summary: analysis.summary,
         });
     }
     catch (error) {

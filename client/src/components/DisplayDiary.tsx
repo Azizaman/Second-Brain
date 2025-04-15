@@ -35,6 +35,7 @@ const DisplayDiary: React.FC = () => {
         }
       );
       setDiary(response.data);
+
     } catch (error) {
       const err = error as AxiosError;
       console.error("Error fetching diary entries:", err);
@@ -42,6 +43,7 @@ const DisplayDiary: React.FC = () => {
       if (err.response?.status === 401) {
         setErrorMessage("Your session has expired. Please log in again.");
         localStorage.removeItem("authToken");
+        navigate("/");
       } else {
         setErrorMessage("Session expired. Please log in again.");
       }

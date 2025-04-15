@@ -1,6 +1,6 @@
 import React from "react";
 import AddDocumentButton from "./AddDocumentButton";
-import DocumentCard from "./DocumentCard";
+import {DocumentCard} from "./DocumentCard";
 import Leftbar from "./SideBar";
 
 const Documents = () => {

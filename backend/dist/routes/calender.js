@@ -24,16 +24,12 @@ const Event = mongoose.model("Event", eventSchema);
 router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const authHeader = req.headers.authorization;
-        console.log('Authorization header:', authHeader);
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return res.status(401).json({ message: "Invalid Authorization header format" });
         }
         const token = authHeader.split(" ")[1];
-        console.log('Extracted token:', token);
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Decoded payload:', decoded);
         const { googleId } = decoded;
-        console.log('This is the googleId:', googleId);
         const events = yield Event.find({ googleId });
         res.status(200).json(events);
     }

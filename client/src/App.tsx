@@ -12,6 +12,7 @@ import DiaryDetails from './components/DiaryDetails';
 import { Calendar } from 'lucide-react';
 import MyCalendar from './components/MyCalendar';
 import CalenderSidebar from './components/CalenderSidebar';
+import LandingPage from './components/LandingPage';
 
 
 
@@ -38,7 +39,7 @@ function App() {
 
             
                 
-                <Route path='/' element={<Documents/>}/>
+                <Route path='/documents' element={<Documents/>}/>
                 <Route path='/documents' element={<Documents/>}/>
                 <Route path='/notes' element={<Notes/>}></Route>
                 
@@ -46,7 +47,8 @@ function App() {
                 <Route path='/diary' element={<Diary/>}/>
                 <Route path='/add-diary' element={<AddDiary/>}/>
                 <Route path="/diary/:diaryId" element={<DiaryDetails/>} />
-                <Route path="/calender" element={<CalenderSidebar/>} />
+                <Route path="/calendar" element={<CalenderSidebar/>} />
+                <Route path="/" element={<LandingPage />} />
                 
               
            

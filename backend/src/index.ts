@@ -14,6 +14,7 @@ import authrouter from './routes/auth.js'
 import { PrismaClient } from "@prisma/client";
 import diaryrouter from './routes/diary.js'
 import eventsrouter from './routes/calender.js'
+import mammoth from "mammoth";
 
 
 const prisma=new PrismaClient();
@@ -230,8 +231,16 @@ const extractTextFromPDF = async (fileBuffer: Buffer): Promise<string> => {
 
 // Function to extract text using OCR
 const extractTextUsingOCR = async (fileBuffer: Buffer): Promise<string> => {
-  const result = await Tesseract.recognize(fileBuffer, 'eng', { logger: (m) => console.log(m) });
-  return result.data.text;
+  try {
+    console.log("Starting OCR with buffer size:", fileBuffer.length);
+    const result = await Tesseract.recognize(fileBuffer, 'eng', {
+      logger: (m) => console.log(m),
+    });
+    return result.data.text;
+  } catch (error) {
+    console.error("OCR Error:", error);
+    throw new Error("Failed to perform OCR on image.");
+  }
 };
 
 // Helper function to clean up extracted text
@@ -272,7 +281,7 @@ const analyzeContractWithAI = async (contractText: string): Promise<any> => {
 
     // Parse the cleaned response text as JSON
     const parsedResponse = JSON.parse(responseText);
-    console.log('this is the parsedResponse',parsedResponse);
+    
 
 
     
@@ -422,6 +431,9 @@ app.use('/diary',diaryrouter)
 app.use('/events',eventsrouter)
 
 // Updated /upload endpoint
+
+
+// Updated /upload endpoint
 app.post("/upload", authenticateToken, upload.single("file"), async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -429,72 +441,64 @@ app.post("/upload", authenticateToken, upload.single("file"), async (req, res) =
       return res.status(401).json({ message: "Access denied, no token provided" });
     }
 
-    const token = authHeader.split(" ")[1]; // Extract the token part
-
+    const token = authHeader.split(" ")[1];
     if (!token) {
       return res.status(401).json({ message: "Access denied, no token provided" });
     }
 
-    // Verify the token and assert the correct type for decoded payload
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
-
-    const { googleId } = decoded; // googleId from the token payload
+    const { googleId } = decoded;
 
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    
-
     const { title } = req.body;
     const fileBuffer = req.file.buffer;
-    const fileKey = req.file.originalname;
+    const fileKey = req.file.originalname.toLowerCase();
 
-    // Extract text from the file (PDF or image)
+    // Extract text based on file type
     let extractedText = "";
     if (fileKey.endsWith(".pdf")) {
       extractedText = await extractTextFromPDF(fileBuffer);
-      
-    } else {
+    } else if (fileKey.endsWith(".docx")) {
+      // Handle Word documents
+      const result = await mammoth.extractRawText({ buffer: fileBuffer });
+      extractedText = result.value;
+    } else if (fileKey.match(/\.(png|jpg|jpeg|tiff|bmp)$/)) {
+      // Handle images with OCR
       extractedText = await extractTextUsingOCR(fileBuffer);
+    } else {
+      return res.status(400).json({ error: "Unsupported file format. Please upload a PDF, DOCX, PNG, or JPEG." });
     }
 
     // Clean the extracted text
     extractedText = cleanExtractedText(extractedText);
 
     if (!extractedText) {
-      return res
-        .status(400)
-        .json({ error: "Failed to extract text from the uploaded file." });
+      return res.status(400).json({ error: "Failed to extract text from the uploaded file." });
     }
 
     // Analyze the extracted text using AI
     const analysis = await analyzeContractWithAI(extractedText);
 
     // Store the file and analysis in MongoDB
-
-
-
     const newDocument = new FileModel({
       title,
-      parsedResponse: analysis.summary , // Storing summary or extracted text
-      userId: googleId, // Use googleId to associate with the user
+      parsedResponse: analysis.summary,
+      userId: googleId,
       fileKey,
-      data: fileBuffer, // Save the file buffer
+      data: fileBuffer,
       extractedText,
-       // Store the original file name
     });
 
-    // Save the document in the database
     await newDocument.save();
 
-    // Send the summary in the response
     res.status(200).json({
       message: "File uploaded and analyzed successfully",
-      documentId: newDocument._id, // MongoDB _id of the new document
-      summary: analysis.summary, // Include AI-generated summary
+      documentId: newDocument._id,
+      summary: analysis.summary,
     });
-    
   } catch (error) {
     console.error("Error uploading and processing file:", error);
     res.status(500).json({ error: "Failed to upload and process file." });

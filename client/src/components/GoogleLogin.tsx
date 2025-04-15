@@ -1,17 +1,28 @@
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { useState, useEffect } from "react";
 
 export default function Login() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   const handleLoginSuccess = async (credentialResponse: any) => {
     try {
-      const { credential } = credentialResponse; // JWT token from Google
-      // Send the credential (JWT) to your backend for verification
-      const res = await axios.post("http://localhost:5000/login", { token: credential });
+      const res = await axios.post("http://localhost:5000/login", {
+        token: credentialResponse.credential, // Send ID token
+      });
 
       const { token } = res.data;
-      localStorage.setItem("authToken", token); // Save the JWT token in localStorage
-      window.location.href = "/documents"; // Redirect to the documents page
-    } catch (err) {
+      localStorage.setItem("authToken", token);
+      setIsLoggedIn(true);
+      window.location.href = "/documents";
+    } catch (err: any) {
       console.error("Login failed:", err.message);
     }
   };
@@ -20,13 +31,23 @@ export default function Login() {
     console.error("Google Login Failed");
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    setIsLoggedIn(false);
+    window.location.href = "/";
+  };
+
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <div className="">
-        <GoogleLogin
-          onSuccess={handleLoginSuccess}
-          onError={handleLoginFailure}
-        />
+      <div>
+        {isLoggedIn ? (
+          <button onClick={handleLogout}>Logout</button>
+        ) : (
+          <GoogleLogin
+            onSuccess={handleLoginSuccess}
+            onError={handleLoginFailure}
+          />
+        )}
       </div>
     </GoogleOAuthProvider>
   );
