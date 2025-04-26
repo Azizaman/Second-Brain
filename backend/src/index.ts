@@ -40,11 +40,12 @@ const AI_MODEL_INSTANCE = new GoogleGenerativeAI(AI_API_KEY).getGenerativeModel(
 // Initialize Express
 const app = express();
 app.use(express.json());
-app.use(cors());
-
 app.use(cors({
-  origin: 'http://localhost:5173',  // Replace with your frontend URL
+  origin: true, // Reflects the request origin, allows all
+  credentials: true // Supports OAuth cookies/sessions
 }));
+
+
 
 // MongoDB connection
 mongoose.connect(MONGO_URI)
@@ -122,7 +123,7 @@ app.use(
 passport.use(new GoogleStrategy({
   clientID:process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'http://localhost:5000/auth/google/callback',
+  callbackURL: 'https://second-brain-backend-tdy4.onrender.com/auth/google/callback',
   passReqToCallback: true
 }, async (req, accessToken, refreshToken, profile, done) => {
 

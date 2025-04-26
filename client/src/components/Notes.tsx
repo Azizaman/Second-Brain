@@ -1,5 +1,5 @@
 import React from 'react'
-import Showingnotes from './showing-notes'
+import Showingnotes from './Showing-notes'
 import Leftbar from './SideBar'
 import { AddnotesButton } from './AddnotesButton'
 

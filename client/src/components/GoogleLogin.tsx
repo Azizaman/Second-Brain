@@ -14,7 +14,7 @@ export default function Login() {
 
   const handleLoginSuccess = async (credentialResponse: any) => {
     try {
-      const res = await axios.post("http://localhost:5000/login", {
+      const res = await axios.post("https://second-brain-backend-tdy4.onrender.com/login", {
         token: credentialResponse.credential, // Send ID token
       });
 

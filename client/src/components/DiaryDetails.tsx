@@ -19,7 +19,7 @@ const DiaryDetails: React.FC = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("authToken");
-      const response = await axios.get(`http://localhost:5000/diary/${diaryId}`, {
+      const response = await axios.get(`https://second-brain-backend-tdy4.onrender.com/diary/${diaryId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

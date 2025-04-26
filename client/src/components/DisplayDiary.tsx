@@ -27,7 +27,7 @@ const DisplayDiary: React.FC = () => {
       }
 
       const response = await axios.get<DiaryEntry[]>(
-        "http://localhost:5000/diary",
+        "https://second-brain-backend-tdy4.onrender.com/diary",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -65,7 +65,7 @@ const DisplayDiary: React.FC = () => {
         throw new Error("No token found");
       }
 
-      await axios.delete(`http://localhost:5000/diary/${id}`, {
+      await axios.delete(`https://second-brain-backend-tdy4.onrender.com/diary/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

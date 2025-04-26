@@ -35,7 +35,7 @@ const AddDiary: React.FC = () => {
       const cleanedContent = cleanQuillContent(content); // Clean content before saving
 
       await axios.post(
-        "http://localhost:5000/diary",
+        "https://second-brain-backend-tdy4.onrender.com/diary",
         {
           title,
           mood,

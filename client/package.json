@@ -21,6 +21,8 @@
     "@radix-ui/react-tooltip": "^1.1.6",
     "@radix-ui/themes": "^3.1.6",
     "@react-oauth/google": "^0.12.1",
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@react-pdf-viewer/default-layout": "^3.12.0",
     "@tiptap/react": "^2.11.3",
     "@tiptap/starter-kit": "^2.11.3",
     "@types/react-big-calendar": "^0.22.0",

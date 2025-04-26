@@ -1,6 +1,6 @@
 import axios from "axios";
 
 const api=axios.create({
-    baseURL:'http://localhost:5000/auth'
+    baseURL:'https://second-brain-backend-tdy4.onrender.com/auth'
 });
-export const googleAuth=(code)=>api.get(`/google?code=${code}`);
+export const googleAuth=(code: string)=>api.get(`/google?code=${code}`);

@@ -21,11 +21,18 @@ const MyCalendar: React.FC = () => {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("User not logged in");
 
-      const response = await axios.get("http://localhost:5000/events", {
+      const response = await axios.get("https://second-brain-backend-tdy4.onrender.com/events", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const formattedEvents: Event[] = response.data.map((event: any) => ({
+      interface ApiEvent {
+        _id: string;
+        title: string;
+        start: string;
+        end: string;
+      }
+
+      const formattedEvents: Event[] = response.data.map((event: ApiEvent) => ({
         id: event._id,
         title: event.title,
         start: new Date(event.start),
@@ -43,7 +50,7 @@ const MyCalendar: React.FC = () => {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("User not logged in");
 
-      const response = await axios.post("http://localhost:5000/events", newEvent, {
+      const response = await axios.post("https://second-brain-backend-tdy4.onrender.com/events", newEvent, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -58,7 +65,7 @@ const MyCalendar: React.FC = () => {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("User not logged in");
 
-      await axios.delete(`http://localhost:5000/events/${id}`, {
+      await axios.delete(`https://second-brain-backend-tdy4.onrender.com/events/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -102,19 +109,20 @@ const MyCalendar: React.FC = () => {
         User Schedule Manager
       </h1>
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          selectable
-          onSelectSlot={handleSelectSlot}
-          onSelectEvent={handleSelectEvent}
-          style={{ height: "80vh" }}
-          views={["month", "week", "day"]}
-          popup
-          className="custom-calendar"
-        />
+        <div style={{ height: "80vh" }}>
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            selectable
+            onSelectSlot={handleSelectSlot}
+            onSelectEvent={handleSelectEvent}
+            views={["month", "week", "day"]}
+            popup
+            className="custom-calendar"
+          />
+        </div>
       </div>
     </div>
   );

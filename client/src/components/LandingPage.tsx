@@ -2,8 +2,9 @@ import React from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
 import bgImage from "@/assets/ai-landing-bg.png";
-
+import { useNavigate } from "react-router-dom";
 const LandingPage: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div
       className="min-h-screen w-full bg-cover bg-center relative"
@@ -29,7 +30,7 @@ const LandingPage: React.FC = () => {
           <GoogleLogin
             onSuccess={async (credentialResponse) => {
               try {
-                const res = await fetch("http://localhost:5000/login", {
+                const res = await fetch("https://second-brain-backend-tdy4.onrender.com/login", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -40,7 +41,9 @@ const LandingPage: React.FC = () => {
                 const data = await res.json();
                 if (data.token) {
                   localStorage.setItem("authToken", data.token);
-                  window.location.href = "/documents";
+                  
+                  navigate("/documents");
+
                 } else {
                   console.error("Login failed", data.message);
                 }

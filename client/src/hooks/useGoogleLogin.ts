@@ -13,14 +13,14 @@ export const useCustomGoogleLogin = () => {
           },
         });
         const userInfo = res.data; // Contains sub, email, name, etc.
-        const idToken = credentialResponse.id_token || userInfo.id_token; // Fallback, but id_token may not be available
+        const idToken = userInfo.id_token; // Use id_token from userinfo response
 
         if (!idToken) {
           console.error("ID token not available, consider using auth-code flow");
           return;
         }
 
-        const loginRes = await axios.post("http://localhost:5000/login", {
+        const loginRes = await axios.post("https://second-brain-backend-tdy4.onrender.com/login", {
           token: idToken, // Send ID token
         });
 

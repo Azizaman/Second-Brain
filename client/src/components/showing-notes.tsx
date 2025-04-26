@@ -25,7 +25,7 @@ export default function Showingnotes() {
 
     const fetchNotes = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/notes", {
+        const response = await axios.get("https://second-brain-backend-tdy4.onrender.com/notes", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
